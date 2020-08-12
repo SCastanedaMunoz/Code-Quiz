@@ -1,4 +1,5 @@
 * {
+    font-family:'Courier New', Courier, monospace;
     box-sizing: border-box;
     text-align: center;
     font-size: 17px;
@@ -9,6 +10,7 @@ h1 {
     margin-top: 10%;
     font-weight: bold;
 }
+
 
 ul {
     list-style: none;
@@ -62,3 +64,17 @@ li {
     clear: both;
 }
 
+.fader {
+    animation: cssAnimation 1s forwards;
+}
+
+.fader h3 {
+    font-weight: bold;
+    text-align: left;
+}
+
+@keyframes cssAnimation {
+    0%   {opacity: 1;}
+    99% {opacity: 1;}
+    100% {opacity: 0;}
+}

@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en-us">
 
     <head>
+
+        <meta charset="UTF-8">
 
         <!-- Include Bootstrap -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
@@ -21,6 +23,7 @@
         </div>
 
         <div id="content"></div>
+
 
         <!-- <div class="container">
             <div class="row">
@@ -162,29 +165,32 @@
             var unList = $("<ul>");
 
             $(questionObj.options).each(function(index, value){
-                var btn = $(`<li><button type=\"button\" class=\"btn btn-purple\">${index + 1}. ${value}</button></li>`);
+                var btn = $(`<li><button type="button" class="btn btn-purple">${index + 1}. ${value}</button></li>`);
 
                 btn.on("click", function(event){
                     event.preventDefault();
                     lastSelectedAnswer = value;
+                    currQuestion++;
+                    renderQuestion();
 
                     if (lastSelectedAnswer === questionObj.answer) {
                         score += 50;
-
+                        displayMessage("Correct! (^ ∇ ^)");
                     }
-                    else {
-
-                    }
+                    else 
+                        displayMessage("Wrong! (;° ロ°)");
                 });
 
                 $(unList).append(btn);
             });
 
             $(quesContent).append(unList);
-        }
 
-        function displayMessage() {
-            
+            function displayMessage(message) {
+                console.log("This code ran!");
+                var newMessage = $(`<div class="fader"><hr><h3>${message}</h3></div>`);
+                $("#ques-content").append(newMessage);
+            }
         }
       
     </script>
