@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+
+        <!-- Include Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+        <!-- Added link to the jQuery library -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+   
+        <link rel="stylesheet" href="styles/general.css">
+    </head>
+
+    <body>
+        <div class="nav-container">
+            <span id="highscores">View Highscores</span>
+
+            <span id="timer">Time: 0</span>
+        </div>
+
+        <div id="content"></div>
+
+        <!-- <div class="container">
+            <div class="row">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-6">
+                    <h1>Coding Quiz Challenge</h1>
+
+                    <p>Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize yuour score/time by ten seconds.</p>
+                    <button type="button" class="btn btn-purple">Start Quiz</button>
+                </div>
+            </div>
+        </div> -->
+
+    <script src="index.js"></script>
+
+    <script>
+
+        var appStates = {
+            Initial : "state.initial",
+            Questioning : "state.questioning",
+            SubmittingScore : "state.submittingscore",
+            Leaderboard : "state.leaderboard"
+        };
+
+        var timrElement = $("#timer");
+        var higsElement = $("#highscores");
+        var contElement = $("#content");
+        var appState;
+
+        var currQuestion = 0;
+        var score = 0;
+        var lastSelectedAnswer = "";
+
+        const quizTime = 75;
+        const questions = [
+            question_1 = {
+                textContent: "Commonly used data types DO NOT include:",
+                options : [
+                   "strings",
+                   "booleans",
+                   "alert",
+                   "numbers"
+                ],
+                answer : "alert"
+            },
+
+            question_2 = {
+                textContent: "SomeStuff",
+                answer : "a",
+                options : [
+                    a = "",
+                    b = "",
+                    c = "",
+                    d = "",
+                ]
+            },
+
+            question_3 = {
+                textContent: "SomeStuff",
+                answer : "a",
+                options : [
+                    a = "",
+                    b = "",
+                    c = "",
+                    d = "",
+                ]
+            },
+
+            question_4 = {
+                textContent: "SomeStuff",
+                answer : "a",
+                options : [
+                    a = "",
+                    b = "",
+                    c = "",
+                    d = "",
+                ]
+            }
+        ];
+
+        reset();
+
+        function reset() {
+            timrElement.html(`Timer: ${quizTime}`);
+            higsElement.html("View Highscores");
+            createInitialPage();
+        }
+
+        function createInitialPage() {
+            appState = appStates.Initial;
+            console.log("App State Transitioning To:", appState);
+
+            // Initial Layout Element
+            var cont = $("<div class=\"container\"><div class =\"row\"><div class=\"col-sm-3\"></div><div id=\"col-content\" class=\"col-sm-6\"></div></div><div/>");
+
+            // Add it to the page!
+            $(contElement).html(cont);
+
+            // Access content inside the Layout we just made
+            var colContent = $("#col-content");
+            
+            var header = $("<h1>Coding Quiz Challenge</h1>");
+            var paragraph = $("<p>Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize yuour score/time by ten seconds.</p>")
+            var button = $("<button id=\"start-quiz-btn\" type=\"button\" class=\"btn btn-purple\">Start Quiz</button>")
+
+            button.on("click", function() {
+                appState = appStates.Questioning;
+                startQuestioning();
+            });
+
+            // No we add all the stuff to it!
+            $(colContent).append(header);
+            $(colContent).append(paragraph);
+            $(colContent).append(button);
+        }
+
+        function startQuestioning() {
+            console.log("App State Transitioning To:", appState);
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            // Current question to display
+            var questionObj = questions[currQuestion];
+
+            // Initial Layout Element
+            var cont = $("<div class=\"container\"><div class =\"row\"><div class=\"col-sm-3\"></div><div id=\"ques-content\" class=\"col-sm-6\"></div></div><div/>");
+
+            // Add it to the page!
+            $(contElement).html(cont);
+
+             // Access content inside the Layout we just made
+             var quesContent = $("#ques-content");
+
+            var header = $(`<h1>${questionObj.textContent}</h1>`);
+
+            $(quesContent).append(header);
+
+            var unList = $("<ul>");
+
+            $(questionObj.options).each(function(index, value){
+                var btn = $(`<li><button type=\"button\" class=\"btn btn-purple\">${index + 1}. ${value}</button></li>`);
+
+                btn.on("click", function(event){
+                    event.preventDefault();
+                    lastSelectedAnswer = value;
+
+                    if (lastSelectedAnswer === questionObj.answer) {
+                        score += 50;
+
+                    }
+                    else {
+
+                    }
+                });
+
+                $(unList).append(btn);
+            });
+
+            $(quesContent).append(unList);
+        }
+
+        function displayMessage() {
+            
+        }
+      
+    </script>
+       
+    </body>
+
+</html>
