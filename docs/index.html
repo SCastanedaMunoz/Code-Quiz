@@ -22,20 +22,13 @@
             <span id="timer">Time: 0</span>
         </div>
 
-        <div id="content"></div>
-
-
-        <!-- <div class="container">
-            <div class="row">
+        <div class="container">
+            <div class ="row">
                 <div class="col-sm-3"></div>
-                <div class="col-sm-6">
-                    <h1>Coding Quiz Challenge</h1>
-
-                    <p>Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize yuour score/time by ten seconds.</p>
-                    <button type="button" class="btn btn-purple">Start Quiz</button>
+                <div id="content" class="col-sm-6">
                 </div>
             </div>
-        </div> -->
+        <div>
 
     <script src="index.js"></script>
 
@@ -52,9 +45,9 @@
         var higsElement = $("#highscores");
         var contElement = $("#content");
         var appState;
+        var score = 0;
 
         var currQuestion = 0;
-        var score = 0;
         var lastSelectedAnswer = "";
 
         const quizTime = 75;
@@ -71,36 +64,47 @@
             },
 
             question_2 = {
-                textContent: "SomeStuff",
-                answer : "a",
+                textContent: "The condition in an if / else statement is enclosed within _____.",
                 options : [
-                    a = "",
-                    b = "",
-                    c = "",
-                    d = "",
-                ]
+                   "quotes",
+                   "curly brackets",
+                   "parentheses",
+                   "square brackets"
+                ],
+                answer : "parentheses"
             },
 
             question_3 = {
-                textContent: "SomeStuff",
-                answer : "a",
+                textContent: "Arrays in JavaScript can be used to store _____.",
                 options : [
-                    a = "",
-                    b = "",
-                    c = "",
-                    d = "",
-                ]
+                   "numbers and strings",
+                   "other arrays",
+                   "booleans",
+                   "all of the above"
+                ],
+                answer : "all of the above"
             },
 
             question_4 = {
-                textContent: "SomeStuff",
-                answer : "a",
+                textContent: "String values must be enclosed within _____ when being assigned to variables.",
                 options : [
-                    a = "",
-                    b = "",
-                    c = "",
-                    d = "",
-                ]
+                   "commas",
+                   "curly brackets",
+                   "quotes",
+                   "parentheses"
+                ],
+                answer : "quotes"
+            },
+
+            question_5 = {
+                textContent: "A very useful tool used during development and debugging for printing content to the debugger is:",
+                options : [
+                   "JavaScript",
+                   "terminal / bash",
+                   "for loops",
+                   "console log"
+                ],
+                answer : "console log"
             }
         ];
 
@@ -116,83 +120,155 @@
             appState = appStates.Initial;
             console.log("App State Transitioning To:", appState);
 
-            // Initial Layout Element
-            var cont = $("<div class=\"container\"><div class =\"row\"><div class=\"col-sm-3\"></div><div id=\"col-content\" class=\"col-sm-6\"></div></div><div/>");
-
-            // Add it to the page!
-            $(contElement).html(cont);
-
-            // Access content inside the Layout we just made
-            var colContent = $("#col-content");
+            $(contElement).empty();
             
-            var header = $("<h1>Coding Quiz Challenge</h1>");
+            var header = $("<header><h1>Coding Quiz Challenge</h1></header>");
             var paragraph = $("<p>Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize yuour score/time by ten seconds.</p>")
             var button = $("<button id=\"start-quiz-btn\" type=\"button\" class=\"btn btn-purple\">Start Quiz</button>")
 
             button.on("click", function() {
                 appState = appStates.Questioning;
-                startQuestioning();
+                console.log("App State Transitioning To:", appState);
+                createNewQuestion();
             });
 
-            // No we add all the stuff to it!
-            $(colContent).append(header);
-            $(colContent).append(paragraph);
-            $(colContent).append(button);
+            $(contElement).append(header);
+            $(contElement).append(paragraph);
+            $(contElement).append(button);
         }
 
-        function startQuestioning() {
-            console.log("App State Transitioning To:", appState);
-            renderQuestion();
-        }
+        function createNewQuestion() {
+            if(currQuestion >= questions.length) {
+                appState = appStates.SubmittingScore
+                console.log("App State Transitioning To:", appState);
+                createSubmitPage();
+                return;
+            }
 
-        function renderQuestion() {
-            // Current question to display
+            $(contElement).empty();
+
             var questionObj = questions[currQuestion];
-
-            // Initial Layout Element
-            var cont = $("<div class=\"container\"><div class =\"row\"><div class=\"col-sm-3\"></div><div id=\"ques-content\" class=\"col-sm-6\"></div></div><div/>");
-
-            // Add it to the page!
-            $(contElement).html(cont);
-
-             // Access content inside the Layout we just made
-             var quesContent = $("#ques-content");
 
             var header = $(`<h1>${questionObj.textContent}</h1>`);
 
-            $(quesContent).append(header);
+            $(contElement).append(header);
 
             var unList = $("<ul>");
 
             $(questionObj.options).each(function(index, value){
-                var btn = $(`<li><button type="button" class="btn btn-purple">${index + 1}. ${value}</button></li>`);
-
-                btn.on("click", function(event){
-                    event.preventDefault();
-                    lastSelectedAnswer = value;
-                    currQuestion++;
-                    renderQuestion();
-
-                    if (lastSelectedAnswer === questionObj.answer) {
-                        score += 50;
-                        displayMessage("Correct! (^ ∇ ^)");
-                    }
-                    else 
-                        displayMessage("Wrong! (;° ロ°)");
-                });
-
+                var btn = $(`<li><button type="button" class="ques-option btn btn-purple" data-ques-option="${value}">${index + 1}. ${value}</button></li>`);
                 $(unList).append(btn);
             });
 
-            $(quesContent).append(unList);
+            $(contElement).append(unList);
+
+            $(".ques-option").on("click", function(event){
+                event.preventDefault();
+                lastSelectedAnswer = $(this).attr("data-ques-option");
+                var isCorrect = lastSelectedAnswer === questionObj.answer;
+
+                if(isCorrect)
+                    score += 30;
+
+                currQuestion++;
+                createNewQuestion();
+
+                if (isCorrect)
+                    displayMessage("Correct! (^ ∇ ^)");
+                else 
+                    displayMessage("Wrong! (;° ロ°)");
+            });
 
             function displayMessage(message) {
-                console.log("This code ran!");
                 var newMessage = $(`<div class="fader"><hr><h3>${message}</h3></div>`);
-                $("#ques-content").append(newMessage);
+                $("#content").append(newMessage);
             }
         }
-      
+
+        function createSubmitPage() {
+            $(contElement).empty();
+
+            var header = $("<h1>All Done!</h1>");
+            var paragraph = $(`<p style="text-align: left">Your final score is ${score}.</p>`);
+            var submitField = $("<div class=\"submit-field\">Enter initials: <input id=\"initials\" type=\"text\"> <button id=\"initials-submit\" type=\"button\" class=\"btn btn-purple\">Submit</button></div>");
+
+            $(contElement).append(header);
+            $(contElement).append(paragraph);
+            $(contElement).append(submitField);
+
+            $("#initials-submit").on("click", function(event){
+                event.preventDefault();
+
+                var inputInitials = $("#initials").val();
+
+                var highscores = localStorage.getItem("highscores");
+
+                if(!highscores)
+                    highscores = {};
+                else
+                    highscores = JSON.parse(highscores);
+
+                highscores[inputInitials] = score;
+
+                localStorage.setItem("highscores", JSON.stringify(highscores));
+
+                appState = appStates.Leaderboard;
+                console.log("App State Transitioning To:", appState);
+                createLeaderboard();
+            });
+        }
+
+        function createLeaderboard(){
+            $(contElement).empty();
+
+            var header = $("<h1>Highscores!</h1>");
+
+            var highscores = localStorage.getItem("highscores");
+
+            contElement.append(header);
+
+            if(highscores)
+            {
+                var parsedHighscores = JSON.parse(highscores);
+
+                var sortedHighscores = sortHighscores();
+
+                var orderScores = $("<ol id=\"highscore-list\"></ol>");
+
+                $.each(sortedHighscores, function(key, value)
+                {
+                    var liElement = $(`<li>${key} - ${value}</li>`);
+                    $(orderScores).append(liElement);
+                });
+
+                $(contElement).append(orderScores);
+
+                function sortHighscores() {
+                    items = Object.keys(parsedHighscores).map(function(key) {
+                        return [key, parsedHighscores[key]];
+                    });
+                    items.sort(function(first, second) {
+                        return second[1] - first[1];
+                    });
+                    sorted_obj={}
+                    $.each(items, function(k, v) {
+                        use_key = v[0]
+                        use_value = v[1]
+                        sorted_obj[use_key] = use_value
+                    });
+                    return(sorted_obj);
+                } 
+            }
+
+            var buttons = $("<div style=\"text-align:left\"><button id=\"hs-back\" type=\"button\" class=\"btn btn-purple\">Go Back</button> <button id=\"hs-clear\" type=\"button\" class=\"btn btn-purple\">Clear Highscores</button></div>");
+
+            contElement.append(buttons);
+
+            $("#hs-clear").on("click", function(event) {
+                localStorage.removeItem("highscores");
+                $("#highscore-list").empty();
+            });
+        }
     </script>
        
     </body>

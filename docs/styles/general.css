@@ -6,11 +6,22 @@
   }
 
 
+hr {
+    border-top: 1.5px solid gray;
+    color : gray;
+    opacity: 0.8;
+}
+
+
 h1 {
+    text-align: left;
     margin-top: 10%;
     font-weight: bold;
 }
 
+header h1 {
+    text-align: center;
+}
 
 ul {
     list-style: none;
@@ -31,22 +42,6 @@ li {
     font-size: 30px;
 }
 
-.btn-purple {
-    background-color: purple;
-    border-color: purple;
-    color:white;
-    font-weight: bold;
-}
-
-.nav-container {
-    position: relative;
-    width: 100%;
-    margin-top: .5em;
-    font-size: 24px;
-    height: 40px;
-    font-weight: bolder;
-}
-
 #highscores {
     float: left;
     position: absolute;
@@ -64,6 +59,27 @@ li {
     clear: both;
 }
 
+.btn-purple {
+    background-color: purple;
+    border-color: purple;
+    color:white;
+    font-weight: bold;
+    padding: 3px 6px;
+}
+
+.nav-container {
+    position: relative;
+    width: 100%;
+    margin-top: .5em;
+    font-size: 24px;
+    height: 40px;
+    font-weight: bolder;
+}
+
+.submit-field {
+    text-align: left;
+}
+
 .fader {
     animation: cssAnimation 1s forwards;
 }
@@ -71,6 +87,8 @@ li {
 .fader h3 {
     font-weight: bold;
     text-align: left;
+    color : gray;
+    opacity: 0.8;
 }
 
 @keyframes cssAnimation {
