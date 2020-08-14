@@ -50,6 +50,7 @@
         var prevState;
         var score = 0;
         var secondsElapsed = 0;
+        var interval;
 
         var currQuestion = 0;
         var lastSelectedAnswer = "";
@@ -114,12 +115,14 @@
 
         init();
 
-
         function init(){
+            $(timrElement).html(`Timer: ${getFormattedSeconds()}`);
+            $(hgscElement).html("View Highscores");
             reset();
             createInitialPage();
 
             $(hgscElement).on("click", function(){
+                clearInterval(interval);
                 createLeaderboard();
             });
         }
@@ -127,8 +130,24 @@
         function reset() {
             secondsElapsed = 0;
             currQuestion = 0;
-            $(timrElement).html(`Timer: ${quizTime}`);
-            $(hgscElement).html("View Highscores");
+        }
+
+        function startTimer() {
+            clearInterval(interval);
+
+            interval = setInterval(function() {
+                secondsElapsed++;
+                $(timrElement).html(`Timer: ${getFormattedSeconds()}`);
+
+                if(secondsElapsed === quizTime) {
+                    clearInterval(interval);
+                    createSubmitPage();
+                }
+            }, 1000);
+        }
+
+        function getFormattedSeconds() {
+            return (quizTime - secondsElapsed);
         }
 
         function createInitialPage() {
@@ -177,6 +196,9 @@
 
             $(contElement).append(unList);
 
+            if(prevState != appStates.Questioning)
+                startTimer();
+
             $(".ques-option").on("click", function(event){
                 event.preventDefault();
                 lastSelectedAnswer = $(this).attr("data-ques-option");
@@ -201,13 +223,16 @@
         }
 
         function createSubmitPage() {
+            clearInterval(interval);
             currState = appStates.SubmittingScore;
             console.log("App State Transitioning To:", currState);
+
+            var totalScore = score + (Math.floor(getFormattedSeconds() * .25));
 
             $(contElement).empty();
 
             var header = $("<h1>All Done!</h1>");
-            var paragraph = $(`<p style="text-align: left">Your final score is ${score}.</p>`);
+            var paragraph = $(`<p style="text-align: left">Your final score is ${totalScore}.</p>`);
             var submitField = $("<div class=\"submit-field\">Enter initials: <input id=\"initials\" type=\"text\"> <button id=\"initials-submit\" type=\"button\" class=\"btn btn-purple\">Submit</button></div>");
 
             $(contElement).append(header);
@@ -229,7 +254,7 @@
                 else
                     highscores = JSON.parse(highscores);
 
-                highscores[inputInitials] = score;
+                highscores[inputInitials] = totalScore;
 
                 localStorage.setItem("highscores", JSON.stringify(highscores));
 
@@ -324,7 +349,7 @@
                         break;
                 }
 
-                $(timrElement).html(`Timer: ${quizTime}`);
+                $(timrElement).html(`Timer: ${getFormattedSeconds()}`);
                 $(hgscElement).html("View Highscores");
             });
         }
