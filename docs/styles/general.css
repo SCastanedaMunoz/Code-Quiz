@@ -59,6 +59,27 @@ li {
     clear: both;
 }
 
+#highscore-list {
+    list-style: none;
+    padding-left: 0px;
+}
+
+.highscore {
+    text-align: left;
+    font-weight: bold;
+    padding: 0.25em 1em;
+    color: white;
+    border-radius: 5px;
+}
+
+.peach {
+    background-color: #F81498;
+}
+
+.orchid {
+    background-color: #3314F8;
+}
+
 .btn-purple {
     background-color: purple;
     border-color: purple;

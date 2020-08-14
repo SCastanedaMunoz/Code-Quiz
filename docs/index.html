@@ -6,6 +6,8 @@
 
         <meta charset="UTF-8">
 
+        <title>Code Quiz!</title>
+
         <!-- Include Bootstrap -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 
@@ -41,11 +43,13 @@
             Leaderboard : "state.leaderboard"
         };
 
-        var timrElement = $("#timer");
-        var higsElement = $("#highscores");
         var contElement = $("#content");
-        var appState;
+        var timrElement = $("#timer");
+        var hgscElement = $("#highscores");
+        var currState;
+        var prevState;
         var score = 0;
+        var secondsElapsed = 0;
 
         var currQuestion = 0;
         var lastSelectedAnswer = "";
@@ -108,17 +112,28 @@
             }
         ];
 
-        reset();
+        init();
+
+
+        function init(){
+            reset();
+            createInitialPage();
+
+            $(hgscElement).on("click", function(){
+                createLeaderboard();
+            });
+        }
 
         function reset() {
-            timrElement.html(`Timer: ${quizTime}`);
-            higsElement.html("View Highscores");
-            createInitialPage();
+            secondsElapsed = 0;
+            currQuestion = 0;
+            $(timrElement).html(`Timer: ${quizTime}`);
+            $(hgscElement).html("View Highscores");
         }
 
         function createInitialPage() {
-            appState = appStates.Initial;
-            console.log("App State Transitioning To:", appState);
+            currState = appStates.Initial;
+            console.log("App State Transitioning To:", currState);
 
             $(contElement).empty();
             
@@ -127,8 +142,6 @@
             var button = $("<button id=\"start-quiz-btn\" type=\"button\" class=\"btn btn-purple\">Start Quiz</button>")
 
             button.on("click", function() {
-                appState = appStates.Questioning;
-                console.log("App State Transitioning To:", appState);
                 createNewQuestion();
             });
 
@@ -139,11 +152,13 @@
 
         function createNewQuestion() {
             if(currQuestion >= questions.length) {
-                appState = appStates.SubmittingScore
-                console.log("App State Transitioning To:", appState);
                 createSubmitPage();
                 return;
             }
+
+            prevState = currState;
+            currState = appStates.Questioning;
+            console.log("App State Transitioning To:", currState);
 
             $(contElement).empty();
 
@@ -186,6 +201,9 @@
         }
 
         function createSubmitPage() {
+            currState = appStates.SubmittingScore;
+            console.log("App State Transitioning To:", currState);
+
             $(contElement).empty();
 
             var header = $("<h1>All Done!</h1>");
@@ -198,6 +216,9 @@
 
             $("#initials-submit").on("click", function(event){
                 event.preventDefault();
+                // Even though the Current State Is not Initial
+                // we set it here so we can go back to the beginning from the Back Button in the Leadeboard
+                currState = appStates.Initial;
 
                 var inputInitials = $("#initials").val();
 
@@ -212,20 +233,26 @@
 
                 localStorage.setItem("highscores", JSON.stringify(highscores));
 
-                appState = appStates.Leaderboard;
-                console.log("App State Transitioning To:", appState);
                 createLeaderboard();
+                reset();
             });
         }
 
         function createLeaderboard(){
+            if(currState != appStates.Leaderboard)
+                prevState = currState;
+            currState = appStates.Leaderboard;
+            console.log("App State Transitioning To:", currState);
+
+            $(hgscElement).empty();
+            $(timrElement).empty();
             $(contElement).empty();
 
-            var header = $("<h1>Highscores!</h1>");
+            var header = $("<h1 style=\"margin-top:0;\">Highscores!</h1>");
 
             var highscores = localStorage.getItem("highscores");
 
-            contElement.append(header);
+            $(contElement).append(header);
 
             if(highscores)
             {
@@ -235,10 +262,18 @@
 
                 var orderScores = $("<ol id=\"highscore-list\"></ol>");
 
+                var counter = 1;
                 $.each(sortedHighscores, function(key, value)
                 {
-                    var liElement = $(`<li>${key} - ${value}</li>`);
+                    var liElement = $(`<li class="highscore">${counter}. ${key} - ${value}</li>`);
+
+                    if (counter % 2)
+                        liElement.addClass("orchid");
+                    else
+                        liElement.addClass("peach");
+
                     $(orderScores).append(liElement);
+                    counter++;
                 });
 
                 $(contElement).append(orderScores);
@@ -262,11 +297,35 @@
 
             var buttons = $("<div style=\"text-align:left\"><button id=\"hs-back\" type=\"button\" class=\"btn btn-purple\">Go Back</button> <button id=\"hs-clear\" type=\"button\" class=\"btn btn-purple\">Clear Highscores</button></div>");
 
-            contElement.append(buttons);
+            $(contElement).append(buttons);
 
             $("#hs-clear").on("click", function(event) {
+                event.preventDefault();
                 localStorage.removeItem("highscores");
                 $("#highscore-list").empty();
+            });
+
+            $("#hs-back").on("click", function(event){
+                event.preventDefault();
+
+                switch(prevState)
+                {
+                    case appStates.Initial:
+                        createInitialPage();
+                        break;
+                    case appStates.Questioning:
+                        createNewQuestion();
+                        break; 
+                    case appStates.SubmittingScore:
+                        createSubmitPage();
+                        break;
+                    default:
+                        console.log(`state ${prevState} not supported`);
+                        break;
+                }
+
+                $(timrElement).html(`Timer: ${quizTime}`);
+                $(hgscElement).html("View Highscores");
             });
         }
     </script>
