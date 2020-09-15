@@ -102,8 +102,10 @@ $(document).ready(function (){
             secondsElapsed++;
             $(timrElement).html(`Timer: ${getFormattedSeconds()}`);
 
-            if(secondsElapsed === quizTime) {
+            if (secondsElapsed >= quizTime) {
                 clearInterval(interval);
+                if (secondsElapsed > quizTime) 
+                    secondsElapsed = quizTime;
                 createSubmitPage();
             }
         }, 1000);
@@ -161,10 +163,11 @@ $(document).ready(function (){
             lastSelectedAnswer = $(this).attr("data-ques-option");
             var isCorrect = lastSelectedAnswer === questionObj.answer;
 
-            if(isCorrect)
+            if (isCorrect)
                 score += 30;
-            else if (!isCorrect && score >= 10)
-                score -= 10;
+            else if (!isCorrect) {
+                secondsElapsed += 10;
+            }
 
             currQuestion++;
             createNewQuestion();
@@ -183,6 +186,7 @@ $(document).ready(function (){
 
     function createSubmitPage() {
         clearInterval(interval);
+        $(timrElement).html(`Timer: ${getFormattedSeconds()}`);
         currState = appStates.SubmittingScore;
         console.log("App State Transitioning To:", currState);
 
